@@ -1,0 +1,112 @@
+Server command: uvicorn main:app --reload
+
+uvicorn is the serving the Server
+main is the name of the file (You can name whatever you want, the command changs accordingly)
+app is the instance as we created app = FastAPI()
+--reload automatically reloads server for new changes
+
+
+We call routes as path in FastAPI
+.get(), .post() are called the operations on path
+The function we use to define the operations on path are called path operation function
+@app or @instance name is called path operation decorator
+
+Pydantic: Pydantic is a data validation and parsing library that enforces strict data schemas using Python type hints, 
+        ensuring only correct and well-structured data enters or leaves your application.
+        In FastAPI, it acts as a contract layer that automatically validates requests, shapes responses, and generates API documentation.
+
+
+Request body: The request body is the data sent by the client to your API. To declare it we use BaseModel from Pydantic
+
+Response body: The response body is the data sent by your API to the client
+
+There is always a response body to send but request body may or mayn't be sent by client each time.
+
+The * field in docs means required. 
+
+
+FastAPI + SQLAlchemy + Pydantic — Quick Notes
+1️⃣ Project separation (why it matters)
+
+You separated concerns correctly:
+
+schema.py → data validation (Pydantic)
+
+models.py → database tables (SQLAlchemy ORM)
+
+database.py → DB connection + Base
+
+main.py → app entry + routes
+
+This prevents mixing API logic with DB logic.
+
+2️⃣ schema.py (Pydantic – API contract)
+class Blog(BaseModel):
+    title: str
+    body: str
+
+
+Defines request/response structure
+
+Used by FastAPI to:
+
+Validate input
+
+Parse JSON
+
+Generate docs
+
+❌ Not tied to DB
+
+✅ Safe for external input
+
+3️⃣ database.py (DB configuration)
+engine = create_engine(...)
+Session = sessionmaker(...)
+Base = declarative_base()
+
+
+engine → DB connection
+
+Session → DB sessions (used later)
+
+Base → parent for all ORM models
+
+Central place for DB config
+
+4️⃣ models.py (SQLAlchemy ORM)
+class Blog(Base):
+    __tablename__ = "blogs"
+
+
+Maps Python class → DB table
+
+__tablename__ is mandatory
+
+Columns define table schema
+
+Used only for DB operations
+
+5️⃣ main.py (App entry point)
+models.Base.metadata.create_all(engine)
+
+
+Creates tables at startup (dev only)
+
+Uses engine + Base
+
+Registers routes
+
+Accepts Pydantic models as input
+
+6️⃣ Request flow (important mental model)
+Client JSON
+   ↓
+Pydantic (schema.py) → validates data
+   ↓
+Route function
+   ↓
+(SQLAlchemy later) → store in DB
+
+
+Right now you stop before DB insert — which is fine.
