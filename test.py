@@ -1,1 +1,1 @@
-print("This file is for the new-branch not for ex-brnach")
+print("This file is for the ex-branch not for new-branch")
