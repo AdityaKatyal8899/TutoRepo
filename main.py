@@ -9,6 +9,7 @@ class Blog(BaseModel):
     text: str
     published: Optional[bool]
 
+print("Example Text")
 
 @app.get("/")
 def root():
