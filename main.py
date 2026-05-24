@@ -10,6 +10,7 @@ class Blog(BaseModel):
     published: Optional[bool]
 
 print("Example Text")
+print("To the ex Text")
 
 @app.get("/")
 def root():
